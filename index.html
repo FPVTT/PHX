@@ -33,6 +33,10 @@
             .animate-bubble-float {
                 animation: bubbleFloat 4s ease-in-out infinite;
             }
+            /* 音乐图标旋转动效 */
+            .animate-spin-slow {
+                animation: spin 3s linear infinite;
+            }
         }
 
         @keyframes characterDance {
@@ -49,8 +53,12 @@
 </head>
 <body class="min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative">
 
+    <audio id="bgm" loop preload="auto">
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
     <div id="bg-character-layer" class="absolute inset-0 z-0 pointer-events-none bg-contain bg-center bg-no-repeat opacity-95 transition-all duration-700 mix-blend-multiply dark:mix-blend-normal dark:opacity-10 animate-character-dance" style="background-image: url('background.png'); background-position: center 45%;">
-        </div>
+    </div>
 
     <div class="absolute inset-0 z-10 pointer-events-none overflow-hidden select-none">
         <span class="absolute top-[20%] left-[15%] text-3xl animate-bubble-float">💧</span>
@@ -59,8 +67,14 @@
         <span class="absolute bottom-[40%] right-[15%] text-3xl animate-bubble-float" style="animation-delay: 2.2s;">✨</span>
     </div>
 
+    <button id="patrick-trigger" class="absolute z-20 cursor-pointer pointer-events-auto" style="width: 25%; height: 40%; top: 30%; left: 20%;" title="点击播放/暂停音乐"></button>
+
     <button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2 rounded-full opacity-80 hover:opacity-100 transition-all duration-300">
         <span id="theme-icon" class="text-gray-500 text-2xl font-bold">☼</span>
+    </button>
+
+    <button id="music-toggle" class="fixed top-20 right-6 z-50 p-2 rounded-full opacity-80 hover:opacity-100 transition-all duration-300">
+        <span id="music-icon" class="text-gray-500 text-2xl font-bold inline-block">♪</span>
     </button>
 
     <div id="password-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
@@ -80,20 +94,21 @@
         </div>
     </div>
 
-    <div id="light-mode-content" class="w-full flex-1 flex flex-col justify-between items-center z-20 py-12 px-4 select-none">
+    <div id="light-mode-content" class="w-full flex-1 flex flex-col justify-between items-center z-20 py-12 px-4 select-none pointer-events-none">
         <h1 class="text-4xl md:text-5xl font-black text-patrick-pink tracking-wider drop-shadow-sm mt-4">
             海欣，21岁生日快乐呀 🎉
         </h1>
 
         <div class="w-full max-w-md bg-white/40 backdrop-blur-md rounded-2xl p-5 border border-white/60 shadow-sm text-center mb-6">
             <p class="text-lg font-bold text-slate-700 mb-1">海绵宝宝和派大星推着大蛋糕来找你啦！</p>
-            </div>
+        </div>
     </div>
 
     <div id="dark-mode-content" class="hidden w-full flex-1 z-20 bg-letter-bg text-gray-200 font-letter">
         <div class="container mx-auto px-4 py-16 max-w-2xl">
             <div class="bg-letter-paper rounded-2xl shadow-2xl p-8 md:p-12 border border-slate-700/50 relative">
                 <div class="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 rounded-t-2xl"></div>
+
                 <div class="pt-2">
                     <h2 class="text-2xl font-bold text-center mb-8 text-pink-300 font-cute tracking-wide">给你的一封信</h2>
                     <div id="letter-content-placeholder" class="whitespace-pre-wrap text-base md:text-lg leading-relaxed text-slate-300 min-h-[200px]">
@@ -115,6 +130,13 @@
         const errorMessage = document.getElementById('error-message');
         const lightModeContent = document.getElementById('light-mode-content');
         const darkModeContent = document.getElementById('dark-mode-content');
+        
+        // 音乐相关变量
+        const bgm = document.getElementById('bgm');
+        const musicToggle = document.getElementById('music-toggle');
+        const musicIcon = document.getElementById('music-icon');
+        const patrickTrigger = document.getElementById('patrick-trigger'); // 派大星点击区域
+        let isMusicPlaying = false;
 
         const correctAnswers = ['2024115', '20241105', '2024.11.5', '2024.11.05', '2024年11月5日'];
 
@@ -137,15 +159,33 @@
                 themeIcon.innerText = '☽'; 
                 lightModeContent.classList.add('hidden');
                 darkModeContent.classList.remove('hidden');
+                patrickTrigger.classList.add('hidden'); // 切换到暗色模式（信件页）时隐藏派大星点击区域
                 document.body.className = "min-h-screen bg-slate-900 transition-all duration-700 font-letter overflow-x-hidden flex flex-col justify-between relative";
                 loadLetterText();
             } else {
                 themeIcon.innerText = '☼';
                 darkModeContent.classList.add('hidden');
                 lightModeContent.classList.remove('hidden');
+                patrickTrigger.classList.remove('hidden'); // 回到主页时显示派大星点击区域
                 document.body.className = "min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative";
             }
         }
+
+        // 播放/暂停音乐函数
+        function toggleMusic() {
+            if (isMusicPlaying) {
+                bgm.pause();
+                musicIcon.classList.remove('animate-spin-slow'); // 停止旋转
+            } else {
+                bgm.play().catch(e => console.log("等待用户交互后播放"));
+                musicIcon.classList.add('animate-spin-slow'); // 开始旋转
+            }
+            isMusicPlaying = !isMusicPlaying;
+        }
+
+        // 绑定点击事件：点击派大星区域 或 右上角音符图标 都可以控制音乐
+        musicToggle.addEventListener('click', toggleMusic);
+        patrickTrigger.addEventListener('click', toggleMusic);
 
         themeToggle.addEventListener('click', () => {
             if (!document.documentElement.classList.contains('dark')) {
@@ -163,6 +203,7 @@
                 passwordModal.classList.add('hidden');
                 answerInput.value = '';
                 toggleTheme();
+                // 已经删除了这里的自动播放逻辑
             } else {
                 errorMessage.classList.remove('hidden');
                 answerInput.value = '';
