@@ -59,7 +59,7 @@
         <span class="absolute bottom-[40%] right-[15%] text-3xl animate-bubble-float" style="animation-delay: 2.2s;">✨</span>
     </div>
 
-    <button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2 rounded-full opacity-20 hover:opacity-100 transition-all duration-300">
+    <button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2 rounded-full opacity-70 hover:opacity-100 transition-all duration-300">
         <span id="theme-icon" class="text-white text-2xl font-bold">☼</span>
     </button>
 
@@ -122,8 +122,6 @@
 
         const correctAnswers = ['生日快乐', '生日', '你的生日', '我的生日'];
 
-        // 移除随机眨眼相关的 JavaScript 代码
-
         function loadLetterText() {
             const placeholder = document.getElementById('letter-content-placeholder');
             fetch('letter.txt')
@@ -140,18 +138,13 @@
         function toggleTheme() {
             document.documentElement.classList.toggle('dark');
             if (document.documentElement.classList.contains('dark')) {
-                // 替换为月亮简笔画字符，并调整样式
                 themeIcon.innerText = '☽'; 
-                // 样式通过在 HTML 中设置 class="text-white text-2xl font-bold" 已经定义好，这里不需要重复设置，只需要切换 innerText
-
                 lightModeContent.classList.add('hidden');
                 darkModeContent.classList.remove('hidden');
                 document.body.className = "min-h-screen bg-slate-900 transition-all duration-700 font-letter overflow-x-hidden flex flex-col justify-between relative";
                 loadLetterText();
             } else {
-                // 替换为太阳简笔画字符
                 themeIcon.innerText = '☼';
-
                 darkModeContent.classList.add('hidden');
                 lightModeContent.classList.remove('hidden');
                 document.body.className = "min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative";
