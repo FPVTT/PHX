@@ -26,15 +26,15 @@
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            /* 1. 丝滑的整体呼吸律动，去除了导致跳动的复杂混合模式 */
+            /* 整体呼吸律动 */
             .animate-character-dance {
                 animation: characterDance 4s ease-in-out infinite;
                 will-change: transform;
             }
-            /* 2. 核心修改：2秒周期性真实的“闭眼”动作 */
+            /* 核心修改：变慢、变平滑的眨眼动画 */
             .animate-blink-eye {
-                animation: blinkEye 2s infinite;
-                transform-origin: top; /* 让眼皮从上往下掉 */
+                animation: blinkEye 4s ease-in-out infinite; /* 4秒一个周期，带平滑过渡 */
+                transform-origin: top; /* 从上往下闭眼 */
                 will-change: transform;
             }
             /* 漂浮空气泡动效 */
@@ -43,17 +43,17 @@
             }
         }
 
-        /* 去除了会引发 Bug 的缩放，改用纯粹的位移和轻微旋转，极其丝滑 */
         @keyframes characterDance {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(1deg); }
+            50% { transform: translateY(-12px) rotate(1deg); }
         }
 
-        /* 真实的眨眼机制：通过Y轴瞬间拉伸眼皮实现 */
+        /* 变慢的眨眼逻辑：留出闭眼的过程和停留时间 */
         @keyframes blinkEye {
-            0%, 48% { transform: scaleY(0); } /* 睁眼状态（眼皮高度为0） */
-            49%, 51% { transform: scaleY(1); } /* 瞬间闭眼（眼皮覆盖眼球） */
-            52%, 100% { transform: scaleY(0); } /* 瞬间睁眼 */
+            0%, 82% { transform: scaleY(0); }         /* 绝大部分时间睁着眼 */
+            88% { transform: scaleY(1.05); }          /* 缓慢闭眼到底部稍微拉伸一点点 */
+            92% { transform: scaleY(1.05); }          /* 保持闭眼一小会儿 */
+            100% { transform: scaleY(0); }            /* 缓慢睁开 */
         }
 
         @keyframes bubbleFloat {
@@ -65,12 +65,12 @@
 <body class="min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative">
 
     <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden bg-white dark:bg-slate-900 transition-colors duration-700">
-        <div class="relative w-full max-w-[1920px] aspect-video animate-character-dance">
-            <img src="background.png" alt="background" class="w-full h-full object-contain dark:opacity-15 dark:grayscale-[30%]">
+        <div class="relative w-full max-w-5xl animate-character-dance">
+            <img src="background.png" alt="background" class="w-full h-auto block dark:opacity-15 dark:grayscale-[30%]">
             
-            <div class="absolute w-[8%] h-[6%] top-[30%] left-[29.5%] bg-[#ffa6b1] border-b-[3px] border-black rounded-b-[40%] animate-blink-eye z-10" style="transform: scaleY(0);"></div>
+            <div class="absolute w-[9%] h-[8%] top-[25.5%] left-[30%] bg-[#ffa6b1] border-b-[2px] border-black rounded-b-[45%] animate-blink-eye z-10" style="transform: scaleY(0);"></div>
             
-            <div class="absolute w-[11%] h-[7%] top-[43%] left-[59.5%] bg-[#fbe159] border-b-[3px] border-black rounded-b-[40%] animate-blink-eye z-10" style="animation-delay: 0.1s; transform: scaleY(0);"></div>
+            <div class="absolute w-[12.5%] h-[9.5%] top-[39.5%] left-[64%] bg-[#fbe159] border-b-[2px] border-black rounded-b-[45%] animate-blink-eye z-10" style="animation-delay: 0.3s; transform: scaleY(0);"></div>
         </div>
     </div>
 
