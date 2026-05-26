@@ -94,12 +94,10 @@
         <div class="container mx-auto px-4 py-16 max-w-2xl">
             <div class="bg-letter-paper rounded-2xl shadow-2xl p-8 md:p-12 border border-slate-700/50 relative">
                 <div class="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 rounded-t-2xl"></div>
-                <div class="absolute top-6 right-6 text-xl opacity-30">💌✨</div>
-                
                 <div class="pt-2">
                     <h2 class="text-2xl font-bold text-center mb-8 text-pink-300 font-cute tracking-wide">给你的一封信</h2>
                     <div id="letter-content-placeholder" class="whitespace-pre-wrap text-base md:text-lg leading-relaxed text-slate-300 min-h-[200px]">
-                        正在悄悄拆开信件中...
+                        稍等
                     </div>
                 </div>
             </div>
@@ -118,7 +116,7 @@
         const lightModeContent = document.getElementById('light-mode-content');
         const darkModeContent = document.getElementById('dark-mode-content');
 
-        const correctAnswers = ['2024115','20241105','2024.11.5','2024.11.05','2024年11月5日'];
+        const correctAnswers = ['2024115', '20241105', '2024.11.5', '2024.11.05', '2024年11月5日'];
 
         function loadLetterText() {
             const placeholder = document.getElementById('letter-content-placeholder');
@@ -148,7 +146,7 @@
                 document.body.className = "min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative";
             }
         }
-        
+
         themeToggle.addEventListener('click', () => {
             if (!document.documentElement.classList.contains('dark')) {
                 passwordModal.classList.remove('hidden');
