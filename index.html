@@ -13,10 +13,8 @@
                 extend: {
                     colors: {
                         'patrick-pink': '#FF9AA2',
-                        'patrick-yellow': '#FFB7B2',
-                        'patrick-blue': '#B5EAD7',
-                        'letter-bg': '#1a1a2e',
-                        'letter-paper': '#16213e',
+                        'letter-bg': '#0f172a',
+                        'letter-paper': '#1e293b',
                     },
                     fontFamily: {
                         'cute': ['Comic Sans MS', 'cursive', 'sans-serif'],
@@ -28,149 +26,86 @@
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            .text-shadow {
-                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            /* 核心动画：让背景图中的海绵宝宝、派大星和蛋糕规律性地动起来 */
+            .animate-character {
+                animation: characterDance 6s ease-in-out infinite;
             }
-            .float {
-                animation: float 3s ease-in-out infinite;
-            }
-            .float-delay-1 {
-                animation: float 3s ease-in-out 0.5s infinite;
-            }
-            .float-delay-2 {
-                animation: float 3s ease-in-out 1s infinite;
-            }
-            .bounce-slow {
-                animation: bounce 2s infinite;
+            /* 漂浮的气泡/星星动效 */
+            .animate-bubble {
+                animation: bubbleFloat 4s ease-in-out infinite;
             }
         }
 
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+        @keyframes characterDance {
+            0%, 100% { transform: translateY(0px) scale(1) rotate(0deg); }
+            33% { transform: translateY(-12px) scale(1.02) rotate(1.5deg); }
+            66% { transform: translateY(6px) scale(0.98) rotate(-1.5deg); }
         }
 
-        .patrick-star {
-            position: relative;
-        }
-        
-        .patrick-star::before {
-            content: "⭐";
-            position: absolute;
-            top: -20px;
-            right: -10px;
-            font-size: 1.5rem;
-            transform: rotate(15deg);
+        @keyframes bubbleFloat {
+            0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.6; }
+            50% { transform: translateY(-20px) translateX(10px); opacity: 0.9; }
         }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-pink-50 to-yellow-50 transition-all duration-700 font-cute overflow-x-hidden">
-    <button id="theme-toggle" class="fixed top-4 right-4 z-50 opacity-30 hover:opacity-70 transition-opacity duration-300 p-2 rounded-full">
-        <i id="theme-icon" class="fa fa-sun-o text-yellow-500 text-xl"></i>
+<body class="min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative">
+
+    <div id="bg-character-layer" class="absolute inset-0 z-0 pointer-events-none bg-contain bg-center bg-no-repeat opacity-95 transition-all duration-700 mix-blend-multiply dark:mix-blend-normal dark:opacity-10 animate-character" style="background-image: url('background.png'); background-position: center 45%;"></div>
+
+    <div class="absolute inset-0 z-10 pointer-events-none overflow-hidden select-none">
+        <span class="absolute top-[20%] left-[15%] text-3xl animate-bubble">🧼</span>
+        <span class="absolute top-[15%] right-[20%] text-2xl animate-bubble" style="animation-delay: 1.5s;">✨</span>
+        <span class="absolute bottom-[30%] left-[25%] text-2xl animate-bubble" style="animation-delay: 0.7s;">🌟</span>
+        <span class="absolute bottom-[40%] right-[15%] text-3xl animate-bubble" style="animation-delay: 2.2s;">🧼</span>
+    </div>
+
+    <button id="theme-toggle" class="fixed top-6 right-6 z-50 p-3 rounded-full bg-white/80 dark:bg-slate-800/80 shadow-lg backdrop-blur-md hover:scale-110 transition-all duration-300">
+        <i id="theme-icon" class="fa fa-sun-o text-yellow-500 text-2xl"></i>
     </button>
 
-    <div id="password-modal" class="fixed inset-0 bg-black/50 z-40 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl transform transition-all">
-            <h3 class="text-xl font-bold text-center mb-4 text-patrick-pink">✨ 解锁秘密信件 ✨</h3>
-            <p class="text-gray-600 text-center mb-4">回答问题才能打开哦：</p>
-            <p class="text-lg font-bold text-center mb-6">今天是什么特别的日子？</p>
+    <div id="password-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-pink-100 dark:border-slate-700">
+            <h3 class="text-xl font-bold text-center mb-2 text-patrick-pink">✨ 解锁秘密信件 ✨</h3>
+            <p class="text-gray-600 dark:text-gray-300 text-center text-sm mb-6">今天是什么特别的日子？</p>
             <input 
                 type="text" 
                 id="answer-input" 
-                class="w-full px-4 py-2 border-2 border-patrick-pink rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-patrick-pink"
-                placeholder="请输入答案..."
+                class="w-full px-4 py-2.5 border-2 border-patrick-pink/50 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-patrick-pink bg-white/50 text-center"
+                placeholder="在此输入答案..."
             >
-            <div class="flex gap-2">
-                <button id="cancel-btn" class="flex-1 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors">
-                    取消
-                </button>
-                <button id="submit-btn" class="flex-1 px-4 py-2 bg-patrick-pink hover:bg-pink-400 text-white rounded-lg transition-colors">
-                    确认
-                </button>
+            <div class="flex gap-3">
+                <button id="cancel-btn" class="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors text-sm">取消</button>
+                <button id="submit-btn" class="flex-1 py-2 bg-patrick-pink hover:bg-pink-400 text-white rounded-xl transition-colors font-bold text-sm">确认</button>
             </div>
-            <p id="error-message" class="text-red-500 text-center mt-3 hidden">答案不对哦，再想想~</p>
+            <p id="error-message" class="text-red-500 text-center text-sm mt-3 hidden">答案不对哦，再想想~</p>
         </div>
     </div>
 
-    <div id="light-mode-content" class="container mx-auto px-4 py-12 max-w-2xl">
-        <div class="text-center mb-12">
-            <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold text-patrick-pink text-shadow mb-4 patrick-star">
-                生日快乐！
-            </h1>
-            <div class="text-6xl mb-6 float">🎂</div>
-            <p class="text-xl text-gray-700 mb-2">派大星祝你</p>
-            <p class="text-2xl font-bold text-patrick-yellow">每一天都开开心心！</p>
-        </div>
+    <div id="light-mode-content" class="w-full flex-1 flex flex-col justify-between items-center z-20 py-12 px-4 select-none">
+        <h1 class="text-4xl md:text-5xl font-black text-patrick-pink tracking-wider drop-shadow-sm mt-4">
+            HAPPY BIRTHDAY! ✨
+        </h1>
 
-        <div class="bg-white rounded-3xl shadow-lg p-8 mb-8 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-patrick-blue/20 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-            <div class="absolute bottom-0 left-0 w-24 h-24 bg-patrick-yellow/20 rounded-full translate-y-1/2 -translate-x-1/2"></div>
-            
-            <div class="relative z-10">
-                <div class="flex justify-center mb-6">
-                    <div class="text-8xl float">🌟</div>
-                </div>
-                
-                <div class="space-y-4 text-gray-700 text-lg">
-                    <p class="text-center">嗨，我的朋友！</p>
-                    <p class="text-center">今天是你的生日，派大星特地来给你送祝福啦！</p>
-                    <p class="text-center">愿你像海绵宝宝一样永远快乐，</p>
-                    <p class="text-center">像派大星一样无忧无虑，</p>
-                    <p class="text-center">所有的愿望都能实现！</p>
-                </div>
-                
-                <div class="flex justify-center mt-8 gap-4">
-                    <span class="text-4xl float">🎈</span>
-                    <span class="text-4xl float-delay-1">🎁</span>
-                    <span class="text-4xl float-delay-2">🎉</span>
-                </div>
-            </div>
+        <div class="w-full max-w-md bg-white/40 backdrop-blur-md rounded-2xl p-5 border border-white/60 shadow-sm text-center mb-6">
+            <p class="text-lg font-bold text-slate-700 mb-1">海绵宝宝和派大星推着大蛋糕来找你啦！</p>
+            <p class="text-xs text-slate-400">点击右上角的小太阳，开启给你的专属秘密通道 ✉️</p>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div class="bg-patrick-pink/20 rounded-2xl p-6 text-center">
-                <div class="text-3xl mb-2">💖</div>
-                <h3 class="font-bold text-patrick-pink mb-1">健康</h3>
-                <p class="text-sm text-gray-600">身体棒棒，吃嘛嘛香</p>
-            </div>
-            <div class="bg-patrick-yellow/20 rounded-2xl p-6 text-center">
-                <div class="text-3xl mb-2">✨</div>
-                <h3 class="font-bold text-yellow-600 mb-1">快乐</h3>
-                <p class="text-sm text-gray-600">天天开心，没有烦恼</p>
-            </div>
-            <div class="bg-patrick-blue/20 rounded-2xl p-6 text-center">
-                <div class="text-3xl mb-2">🚀</div>
-                <h3 class="font-bold text-teal-600 mb-1">幸运</h3>
-                <p class="text-sm text-gray-600">好运连连，心想事成</p>
-            </div>
-        </div>
-
-        <p class="text-center text-gray-500 text-sm">
-            悄悄告诉你，右上角有个小秘密哦~
-        </p>
     </div>
 
-    <div id="dark-mode-content" class="hidden min-h-screen bg-letter-bg text-gray-200 font-letter">
+    <div id="dark-mode-content" class="hidden w-full flex-1 z-20 bg-letter-bg text-gray-200 font-letter">
         <div class="container mx-auto px-4 py-16 max-w-2xl">
-            <div class="bg-letter-paper rounded-lg shadow-2xl p-8 md:p-12 relative">
-                <div class="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-t-lg"></div>
-                <div class="absolute top-6 right-6 text-2xl opacity-50">✉️</div>
+            <div class="bg-letter-paper rounded-2xl shadow-2xl p-8 md:p-12 border border-slate-700/50 relative">
+                <div class="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 rounded-t-2xl"></div>
+                <div class="absolute top-6 right-6 text-xl opacity-30">✉️</div>
                 
-                <div class="pt-4">
-                    <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 text-pink-300">
-                        给你的一封信
-                    </h2>
-                    
-                    <div id="letter-content-placeholder" class="whitespace-pre-wrap text-lg leading-relaxed text-gray-300">
+                <div class="pt-2">
+                    <h2 class="text-2xl font-bold text-center mb-8 text-pink-300 font-cute tracking-wide">给你的一封信</h2>
+                    <div id="letter-content-placeholder" class="whitespace-pre-wrap text-base md:text-lg leading-relaxed text-slate-300 min-h-[200px]">
                         正在悄悄拆开信件中...
                     </div>
                 </div>
             </div>
-        
-            <p class="text-center mt-8 text-gray-500 text-sm">
-                点击右上角的月亮可以返回哦
-            </p>
+            <p class="text-center mt-8 text-slate-500 text-xs font-cute">点击右上角的月亮可以返回主页哦</p>
         </div>
     </div>
 
@@ -185,110 +120,68 @@
         const lightModeContent = document.getElementById('light-mode-content');
         const darkModeContent = document.getElementById('dark-mode-content');
 
-        // 正确答案（不区分大小写和前后空格）
         const correctAnswers = ['生日快乐', '生日', '你的生日', '我的生日'];
 
-        // 异步读取信件函数
         function loadLetterText() {
             const placeholder = document.getElementById('letter-content-placeholder');
             fetch('letter.txt')
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error('未能在仓库中找到 letter.txt 或文件读取失败');
-                    }
+                    if (!response.ok) throw new Error('未能在仓库中找到 letter.txt');
                     return response.text();
                 })
-                .then(text => {
-                    placeholder.innerHTML = text;
-                })
+                .then(text => { placeholder.innerHTML = text; })
                 .catch(err => {
                     placeholder.innerHTML = `<p class="text-red-400 text-center">⚠️ 信件加载失败<br><span class="text-xs text-gray-500">${err.message}</span></p>`;
                 });
         }
 
-        // 切换主题函数
         function toggleTheme() {
             document.documentElement.classList.toggle('dark');
             if (document.documentElement.classList.contains('dark')) {
-                // 切换到深色模式
-                themeIcon.classList.remove('fa-sun-o');
-                themeIcon.classList.add('fa-moon-o');
-                themeIcon.classList.remove('text-yellow-500');
-                themeIcon.classList.add('text-blue-300');
-                
+                themeIcon.className = 'fa fa-moon-o text-blue-300 text-2xl';
                 lightModeContent.classList.add('hidden');
                 darkModeContent.classList.remove('hidden');
-                
-                document.body.classList.remove('bg-gradient-to-br', 'from-pink-50', 'to-yellow-50');
-                document.body.classList.add('bg-letter-bg');
-
-                // 触发读取外部信件
+                document.body.className = "min-h-screen bg-slate-900 transition-all duration-700 font-letter overflow-x-hidden flex flex-col justify-between relative";
                 loadLetterText();
             } else {
-                // 切换到浅色模式
-                themeIcon.classList.remove('fa-moon-o');
-                themeIcon.classList.add('fa-sun-o');
-                themeIcon.classList.remove('text-blue-300');
-                themeIcon.classList.add('text-yellow-500');
-                
+                themeIcon.className = 'fa fa-sun-o text-yellow-500 text-2xl';
                 darkModeContent.classList.add('hidden');
                 lightModeContent.classList.remove('hidden');
-                
-                document.body.classList.remove('bg-letter-bg');
-                document.body.classList.add('bg-gradient-to-br', 'from-pink-50', 'to-yellow-50');
+                document.body.className = "min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative";
             }
         }
         
-        // 主题切换按钮点击事件
         themeToggle.addEventListener('click', () => {
             if (!document.documentElement.classList.contains('dark')) {
-                // 从浅色切换到深色，需要验证
                 passwordModal.classList.remove('hidden');
                 answerInput.focus();
                 errorMessage.classList.add('hidden');
             } else {
-                // 从深色切换到浅色，直接切换
                 toggleTheme();
             }
         });
 
-        // 提交答案
         submitBtn.addEventListener('click', () => {
             const answer = answerInput.value.trim();
-            
             if (correctAnswers.some(correct => answer.toLowerCase() === correct.toLowerCase())) {
-                // 答案正确
                 passwordModal.classList.add('hidden');
                 answerInput.value = '';
                 toggleTheme();
             } else {
-                // 答案错误
                 errorMessage.classList.remove('hidden');
                 answerInput.value = '';
                 answerInput.focus();
             }
         });
 
-        // 取消按钮
         cancelBtn.addEventListener('click', () => {
             passwordModal.classList.add('hidden');
             answerInput.value = '';
             errorMessage.classList.add('hidden');
         });
 
-        // 回车键提交
-        answerInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                submitBtn.click();
-            }
-        });
-
-        // 点击模态框外部关闭
-        passwordModal.addEventListener('click', (e) => {
-            if (e.target === passwordModal) {
-                cancelBtn.click();
-            }
-        });
+        answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitBtn.click(); });
+        passwordModal.addEventListener('click', (e) => { if (e.target === passwordModal) cancelBtn.click(); });
     </script>
 </body>
 </html>
