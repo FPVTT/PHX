@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>生日快乐 🎂</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -26,34 +25,20 @@
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            /* 整体呼吸律动 */
+            /* 1. 核心动画：让背景整体律动（派大星、海绵宝宝、蛋糕一起浮动） */
             .animate-character-dance {
-                animation: characterDance 4s ease-in-out infinite;
-                will-change: transform;
+                animation: characterDance 6s ease-in-out infinite;
             }
-            /* 核心修改：变慢、变平滑的眨眼动画 */
-            .animate-blink-eye {
-                animation: blinkEye 4s ease-in-out infinite; /* 4秒一个周期，带平滑过渡 */
-                transform-origin: top; /* 从上往下闭眼 */
-                will-change: transform;
-            }
-            /* 漂浮空气泡动效 */
+            /* 漂浮装饰元素动效 */
             .animate-bubble-float {
                 animation: bubbleFloat 4s ease-in-out infinite;
             }
         }
 
         @keyframes characterDance {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-12px) rotate(1deg); }
-        }
-
-        /* 变慢的眨眼逻辑：留出闭眼的过程和停留时间 */
-        @keyframes blinkEye {
-            0%, 82% { transform: scaleY(0); }         /* 绝大部分时间睁着眼 */
-            88% { transform: scaleY(1.05); }          /* 缓慢闭眼到底部稍微拉伸一点点 */
-            92% { transform: scaleY(1.05); }          /* 保持闭眼一小会儿 */
-            100% { transform: scaleY(0); }            /* 缓慢睁开 */
+            0%, 100% { transform: translateY(0px) scale(1) rotate(0deg); }
+            33% { transform: translateY(-12px) scale(1.02) rotate(1.5deg); }
+            66% { transform: translateY(6px) scale(0.98) rotate(-1.5deg); }
         }
 
         @keyframes bubbleFloat {
@@ -64,30 +49,23 @@
 </head>
 <body class="min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative">
 
-    <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden bg-white dark:bg-slate-900 transition-colors duration-700">
-        <div class="relative w-full max-w-5xl animate-character-dance">
-            <img src="background.png" alt="background" class="w-full h-auto block dark:opacity-15 dark:grayscale-[30%]">
-            
-            <div class="absolute w-[9%] h-[8%] top-[25.5%] left-[30%] bg-[#ffa6b1] border-b-[2px] border-black rounded-b-[45%] animate-blink-eye z-10" style="transform: scaleY(0);"></div>
-            
-            <div class="absolute w-[12.5%] h-[9.5%] top-[39.5%] left-[64%] bg-[#fbe159] border-b-[2px] border-black rounded-b-[45%] animate-blink-eye z-10" style="animation-delay: 0.3s; transform: scaleY(0);"></div>
+    <div id="bg-character-layer" class="absolute inset-0 z-0 pointer-events-none bg-contain bg-center bg-no-repeat opacity-95 transition-all duration-700 mix-blend-multiply dark:mix-blend-normal dark:opacity-10 animate-character-dance" style="background-image: url('background.png'); background-position: center 45%;">
         </div>
-    </div>
 
     <div class="absolute inset-0 z-10 pointer-events-none overflow-hidden select-none">
-        <span class="absolute top-[20%] left-[15%] text-3xl animate-bubble-float">🧼</span>
-        <span class="absolute top-[15%] right-[20%] text-2xl animate-bubble-float" style="animation-delay: 1.5s;">✨</span>
-        <span class="absolute bottom-[30%] left-[25%] text-2xl animate-bubble-float" style="animation-delay: 0.7s;">🌟</span>
-        <span class="absolute bottom-[40%] right-[15%] text-3xl animate-bubble-float" style="animation-delay: 2.2s;">🧼</span>
+        <span class="absolute top-[20%] left-[15%] text-3xl animate-bubble-float">💧</span>
+        <span class="absolute top-[15%] right-[20%] text-2xl animate-bubble-float" style="animation-delay: 1.5s;">🌟</span>
+        <span class="absolute bottom-[30%] left-[25%] text-2xl animate-bubble-float" style="animation-delay: 0.7s;">🎈</span>
+        <span class="absolute bottom-[40%] right-[15%] text-3xl animate-bubble-float" style="animation-delay: 2.2s;">✨</span>
     </div>
 
-    <button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2 rounded-full opacity-70 hover:opacity-100 transition-all duration-300">
-        <i id="theme-icon" class="fa fa-sun-o text-gray-400 text-xl"></i>
+    <button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2 rounded-full opacity-20 hover:opacity-100 transition-all duration-300">
+        <span id="theme-icon" class="text-white text-2xl font-bold">☼</span>
     </button>
 
     <div id="password-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-pink-100 dark:border-slate-700">
-            <h3 class="text-xl font-bold text-center mb-2 text-patrick-pink">✨ 解锁秘密信件 ✨</h3>
+            <h3 class="text-xl font-bold text-center mb-2 text-patrick-pink">🔑 解锁秘密信件 ✨</h3>
             <p class="text-gray-600 dark:text-gray-300 text-center text-sm mb-6">今天是什么特别的日子？</p>
             <input 
                 type="text" 
@@ -105,12 +83,12 @@
 
     <div id="light-mode-content" class="w-full flex-1 flex flex-col justify-between items-center z-20 py-12 px-4 select-none">
         <h1 class="text-4xl md:text-5xl font-black text-patrick-pink tracking-wider drop-shadow-sm mt-4">
-            HAPPY BIRTHDAY! ✨
+            HAPPY BIRTHDAY! 🎉
         </h1>
 
         <div class="w-full max-w-md bg-white/40 backdrop-blur-md rounded-2xl p-5 border border-white/60 shadow-sm text-center mb-6">
             <p class="text-lg font-bold text-slate-700 mb-1">海绵宝宝和派大星推着大蛋糕来找你啦！</p>
-            <p class="text-xs text-slate-400">悄悄告诉你，右上角有个小秘密哦 ~ ✉️</p>
+            <p class="text-xs text-slate-400">悄悄告诉你，右上角有个小秘密哦 ~ 👇✨</p>
         </div>
     </div>
 
@@ -118,7 +96,7 @@
         <div class="container mx-auto px-4 py-16 max-w-2xl">
             <div class="bg-letter-paper rounded-2xl shadow-2xl p-8 md:p-12 border border-slate-700/50 relative">
                 <div class="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 rounded-t-2xl"></div>
-                <div class="absolute top-6 right-6 text-xl opacity-30">✉️</div>
+                <div class="absolute top-6 right-6 text-xl opacity-30">💌✨</div>
                 
                 <div class="pt-2">
                     <h2 class="text-2xl font-bold text-center mb-8 text-pink-300 font-cute tracking-wide">给你的一封信</h2>
@@ -144,6 +122,8 @@
 
         const correctAnswers = ['生日快乐', '生日', '你的生日', '我的生日'];
 
+        // 移除随机眨眼相关的 JavaScript 代码
+
         function loadLetterText() {
             const placeholder = document.getElementById('letter-content-placeholder');
             fetch('letter.txt')
@@ -153,20 +133,25 @@
                 })
                 .then(text => { placeholder.innerHTML = text; })
                 .catch(err => {
-                    placeholder.innerHTML = `<p class="text-red-400 text-center">⚠️ 信件加载失败<br><span class="text-xs text-gray-500">${err.message}</span></p>`;
+                    placeholder.innerHTML = `<p class="text-red-400 text-center">❌ 信件加载失败<br><span class="text-xs text-gray-500">${err.message}</span></p>`;
                 });
         }
 
         function toggleTheme() {
             document.documentElement.classList.toggle('dark');
             if (document.documentElement.classList.contains('dark')) {
-                themeIcon.className = 'fa fa-moon-o text-gray-400 text-xl';
+                // 替换为月亮简笔画字符，并调整样式
+                themeIcon.innerText = '☽'; 
+                // 样式通过在 HTML 中设置 class="text-white text-2xl font-bold" 已经定义好，这里不需要重复设置，只需要切换 innerText
+
                 lightModeContent.classList.add('hidden');
                 darkModeContent.classList.remove('hidden');
                 document.body.className = "min-h-screen bg-slate-900 transition-all duration-700 font-letter overflow-x-hidden flex flex-col justify-between relative";
                 loadLetterText();
             } else {
-                themeIcon.className = 'fa fa-sun-o text-gray-400 text-xl';
+                // 替换为太阳简笔画字符
+                themeIcon.innerText = '☼';
+
                 darkModeContent.classList.add('hidden');
                 lightModeContent.classList.remove('hidden');
                 document.body.className = "min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative";
