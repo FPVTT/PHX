@@ -12,7 +12,7 @@
             theme: {
                 extend: {
                     colors: {
-                        'patrick-pink': '#FF9AA2',
+                        'patrick-pink': '#FF9AA2', // 派大星粉
                         'letter-bg': '#0f172a',
                         'letter-paper': '#1e293b',
                     },
@@ -53,21 +53,25 @@
 
         @keyframes giftBounce {
             0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-15px) scale(1.05); }
+            50% { transform: translateY(-15px) scale(1.03); }
         }
     </style>
 </head>
 <body class="min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative">
 
-    <div id="intro-overlay" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center transition-opacity duration-1000">
-        <div id="gift-wrapper" class="flex flex-col items-center cursor-pointer transition-transform duration-300 hover:scale-110">
-            <div id="gift-box" class="text-8xl md:text-9xl animate-gift-bounce select-none">
-                🎁
+    <div id="intro-overlay" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center transition-opacity duration-1000 cursor-pointer">
+        <div id="gift-wrapper" class="relative animate-gift-bounce select-none transition-transform duration-300 hover:scale-105">
+            
+            <div class="absolute -top-12 md:-top-16 left-1/2 -translate-x-1/2 text-7xl md:text-8xl z-10">🎀</div>
+
+            <div id="gift-box" class="relative w-64 h-64 md:w-80 md:h-80 rounded-3xl bg-patrick-pink border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center">
+                <div class="absolute inset-y-0 w-10 md:w-12 bg-white/80"></div>
+                <div class="absolute inset-x-0 h-10 md:h-12 bg-white/80"></div>
+                
+                <div class="absolute top-0 inset-x-0 h-16 bg-black/5 rounded-t-3xl border-b-2 border-white/20"></div>
             </div>
-            <p id="gift-text" class="mt-8 text-patrick-pink font-bold text-lg md:text-xl font-cute tracking-widest animate-pulse">
-                有一份特别的礼物，点击拆开
-            </p>
-        </div>
+            
+            </div>
     </div>
 
     <audio id="bgm" loop preload="auto">
@@ -154,14 +158,17 @@
         const giftWrapper = document.getElementById('gift-wrapper');
         let continuousConfettiInterval;
 
-        giftWrapper.addEventListener('click', () => {
+        // 点击整个白底区域或礼物盒都可以触发
+        introOverlay.addEventListener('click', () => {
             // 1. 隐藏礼物盒本身，防止重复点击
             giftWrapper.style.display = 'none';
+            // 锁定点击，防止淡出期间再次点击
+            introOverlay.style.pointerEvents = 'none';
 
             // 2. 触发一次盛大的爆点礼花
             confetti({
-                particleCount: 150,
-                spread: 80,
+                particleCount: 200, // 增加开场礼花数量
+                spread: 90,
                 origin: { y: 0.5 },
                 colors: ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA']
             });
@@ -179,24 +186,28 @@
             }, 1500);
         });
 
-        // 持续 10% 密度飘落礼花的函数
+        // 持续飘落礼花的函数
         function startContinuousConfetti() {
-            // 每 400 毫秒从顶部随机位置掉落 1~2 个彩色纸片
+            // ★【密度修改在这里】★
+            // setInterval 的第二个参数 (这里是 400) 控制发射频率（毫秒）。
+            // 数值越小（例如 100），礼花发射越快，看起来越密。
+            // 数值越大（例如 1000），礼花发射越慢，看起来越稀疏。
             continuousConfettiInterval = setInterval(() => {
                 confetti({
-                    particleCount: 1, // 数量少，看起来自然
-                    startVelocity: 0, // 初始速度为0，像从天花板掉下来
-                    ticks: 300,       // 存活时间长一点
-                    gravity: 0.4,     // 重力小一点，飘得慢
+                    // particleCount: 控制每次发射的纸片数量。保持为 1 可以有零星飘落的感觉。
+                    particleCount: 1, 
+                    startVelocity: 0, 
+                    ticks: 300,       
+                    gravity: 0.4,     
                     origin: {
-                        x: Math.random(), // 水平随机
-                        y: -0.1           // 从屏幕最上方稍靠外的位置产生
+                        x: Math.random(), 
+                        y: -0.1           
                     },
                     colors: ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA'],
                     shapes: ['circle', 'square'],
-                    scalar: Math.random() * 0.5 + 0.5 // 随机大小
+                    scalar: Math.random() * 0.5 + 0.5 
                 });
-            }, 400); 
+            }, 400); // <-- 在这里修改时间间隔（毫秒）
         }
 
         // =======================
@@ -247,9 +258,6 @@
                 patrickTrigger.classList.add('hidden'); 
                 if(patrickHint) patrickHint.classList.add('hidden'); 
                 
-                // 进入信件页，为了不干扰阅读，可以暂停礼花（可选）
-                // clearInterval(continuousConfettiInterval); 
-
                 document.body.className = "min-h-screen bg-slate-900 transition-all duration-700 font-letter overflow-x-hidden flex flex-col justify-between relative";
                 loadLetterText();
             } else {
@@ -259,9 +267,6 @@
                 patrickTrigger.classList.remove('hidden'); 
                 if(!isMusicPlaying && patrickHint) patrickHint.classList.remove('hidden'); 
                 
-                // 如果之前停了礼花，退回主页可以重新开启（可选）
-                // startContinuousConfetti();
-
                 document.body.className = "min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative";
             }
         }
