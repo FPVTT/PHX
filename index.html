@@ -63,13 +63,13 @@
         <span class="absolute bottom-[40%] right-[15%] text-3xl animate-bubble-float" style="animation-delay: 2.2s;">✨</span>
     </div>
 
-    <div id="patrick-hint" class="absolute z-20 text-patrick-pink text-xs md:text-sm font-bold bg-white/80 px-3 py-1.5 rounded-full shadow-sm pointer-events-none animate-bounce" style="top: 36%; left: 22%;">
-        戳一下
+    <div id="patrick-hint" class="absolute z-20 text-patrick-pink text-xs md:text-sm font-bold bg-white/80 px-3 py-1.5 rounded-full shadow-sm pointer-events-none animate-bounce" style="top: 26%; left: 22%;">
+        戳我听歌 🎵
     </div>
 
     <button id="patrick-trigger" class="absolute z-20 cursor-pointer pointer-events-auto" style="width: 25%; height: 40%; top: 30%; left: 20%;" title="点击播放/暂停音乐"></button>
 
-    <button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2 rounded-full opacity-50 hover:opacity-100 transition-all duration-300">
+    <button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2 rounded-full opacity-80 hover:opacity-100 transition-all duration-300">
         <span id="theme-icon" class="text-gray-500 text-2xl font-bold">☼</span>
     </button>
 
@@ -87,6 +87,18 @@
                 <button id="submit-btn" class="flex-1 py-2 bg-patrick-pink hover:bg-pink-400 text-white rounded-xl transition-colors font-bold text-sm">确认</button>
             </div>
             <p id="error-message" class="text-red-500 text-center text-sm mt-3 hidden">不对啊，再给你机会</p>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-pink-100 dark:border-slate-700 text-center">
+            <div class="text-4xl mb-4">🎁</div>
+            <p class="text-gray-700 dark:text-gray-200 font-bold text-lg mb-2">暗号正确！</p>
+            <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">准备好拆开这封专属信件了吗？</p>
+            <div class="flex gap-3">
+                <button id="confirm-cancel-btn" class="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors text-sm">再等一下</button>
+                <button id="confirm-yes-btn" class="flex-1 py-2 bg-patrick-pink hover:bg-pink-400 text-white rounded-xl transition-colors font-bold text-sm">马上拆开</button>
+            </div>
         </div>
     </div>
 
@@ -119,18 +131,26 @@
     <script>
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
+        
+        // 第一层：密码弹窗
         const passwordModal = document.getElementById('password-modal');
         const answerInput = document.getElementById('answer-input');
         const submitBtn = document.getElementById('submit-btn');
         const cancelBtn = document.getElementById('cancel-btn');
         const errorMessage = document.getElementById('error-message');
+        
+        // 第二层：确认弹窗 (新增)
+        const confirmModal = document.getElementById('confirm-modal');
+        const confirmYesBtn = document.getElementById('confirm-yes-btn');
+        const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+
         const lightModeContent = document.getElementById('light-mode-content');
         const darkModeContent = document.getElementById('dark-mode-content');
         
-        // 音乐相关变量
+        // 音乐及派大星点击相关变量
         const bgm = document.getElementById('bgm');
-        const patrickTrigger = document.getElementById('patrick-trigger'); // 派大星点击区域
-        const patrickHint = document.getElementById('patrick-hint'); // 派大星点击提示
+        const patrickTrigger = document.getElementById('patrick-trigger'); 
+        const patrickHint = document.getElementById('patrick-hint'); 
         let isMusicPlaying = false;
 
         const correctAnswers = ['2024115', '20241105', '2024.11.5', '2024.11.05', '2024年11月5日'];
@@ -187,6 +207,7 @@
         // 绑定点击事件：点击派大星区域控制音乐
         patrickTrigger.addEventListener('click', toggleMusic);
 
+        // 点击太阳图标：调出密码输入框
         themeToggle.addEventListener('click', () => {
             if (!document.documentElement.classList.contains('dark')) {
                 passwordModal.classList.remove('hidden');
@@ -197,12 +218,13 @@
             }
         });
 
+        // 密码输入框确认按钮
         submitBtn.addEventListener('click', () => {
             const answer = answerInput.value.trim();
             if (correctAnswers.some(correct => answer.toLowerCase() === correct.toLowerCase())) {
                 passwordModal.classList.add('hidden');
-                answerInput.value = '';
-                toggleTheme();
+                // ★ 不直接切换主题，而是弹出二次确认窗口
+                confirmModal.classList.remove('hidden');
             } else {
                 errorMessage.classList.remove('hidden');
                 answerInput.value = '';
@@ -210,14 +232,31 @@
             }
         });
 
+        // 密码输入框取消按钮
         cancelBtn.addEventListener('click', () => {
             passwordModal.classList.add('hidden');
             answerInput.value = '';
             errorMessage.classList.add('hidden');
         });
 
+        // ★ 新增：二次确认弹窗的按钮事件
+        confirmYesBtn.addEventListener('click', () => {
+            confirmModal.classList.add('hidden');
+            answerInput.value = '';
+            toggleTheme(); // 这里才真正切换到信件页面
+        });
+
+        confirmCancelBtn.addEventListener('click', () => {
+            confirmModal.classList.add('hidden');
+            answerInput.value = ''; // 清空输入框内容，退回主页
+        });
+
+        // 回车键快捷提交（只在密码框有效）
         answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitBtn.click(); });
+        
+        // 点击空白处关闭弹窗
         passwordModal.addEventListener('click', (e) => { if (e.target === passwordModal) cancelBtn.click(); });
+        confirmModal.addEventListener('click', (e) => { if (e.target === confirmModal) confirmCancelBtn.click(); });
     </script>
 </body>
 </html>
