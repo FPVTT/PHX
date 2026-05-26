@@ -92,12 +92,10 @@
 
     <div id="confirm-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-pink-100 dark:border-slate-700 text-center">
-            <div class="text-4xl mb-4">🎁</div>
-            <p class="text-gray-700 dark:text-gray-200 font-bold text-lg mb-2">暗号正确！</p>
-            <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">准备好拆开这封专属信件了吗？</p>
+            <p class="text-gray-700 dark:text-gray-200 font-bold text-lg mb-6 mt-2">暗号正确！</p>
             <div class="flex gap-3">
-                <button id="confirm-cancel-btn" class="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors text-sm">再等一下</button>
                 <button id="confirm-yes-btn" class="flex-1 py-2 bg-patrick-pink hover:bg-pink-400 text-white rounded-xl transition-colors font-bold text-sm">马上拆开</button>
+                <button id="confirm-cancel-btn" class="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors text-sm">再等一下</button>
             </div>
         </div>
     </div>
@@ -139,7 +137,7 @@
         const cancelBtn = document.getElementById('cancel-btn');
         const errorMessage = document.getElementById('error-message');
         
-        // 第二层：确认弹窗 (新增)
+        // 第二层：确认弹窗
         const confirmModal = document.getElementById('confirm-modal');
         const confirmYesBtn = document.getElementById('confirm-yes-btn');
         const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
@@ -223,7 +221,6 @@
             const answer = answerInput.value.trim();
             if (correctAnswers.some(correct => answer.toLowerCase() === correct.toLowerCase())) {
                 passwordModal.classList.add('hidden');
-                // ★ 不直接切换主题，而是弹出二次确认窗口
                 confirmModal.classList.remove('hidden');
             } else {
                 errorMessage.classList.remove('hidden');
@@ -239,7 +236,7 @@
             errorMessage.classList.add('hidden');
         });
 
-        // ★ 新增：二次确认弹窗的按钮事件
+        // 二次确认弹窗的按钮事件
         confirmYesBtn.addEventListener('click', () => {
             confirmModal.classList.add('hidden');
             answerInput.value = '';
