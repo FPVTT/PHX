@@ -33,10 +33,6 @@
             .animate-bubble-float {
                 animation: bubbleFloat 4s ease-in-out infinite;
             }
-            /* 音乐图标旋转动效 */
-            .animate-spin-slow {
-                animation: spin 3s linear infinite;
-            }
         }
 
         @keyframes characterDance {
@@ -67,14 +63,14 @@
         <span class="absolute bottom-[40%] right-[15%] text-3xl animate-bubble-float" style="animation-delay: 2.2s;">✨</span>
     </div>
 
+    <div id="patrick-hint" class="absolute z-20 text-patrick-pink text-xs md:text-sm font-bold bg-white/80 px-3 py-1.5 rounded-full shadow-sm pointer-events-none animate-bounce" style="top: 26%; left: 22%;">
+        戳我听歌 🎵
+    </div>
+
     <button id="patrick-trigger" class="absolute z-20 cursor-pointer pointer-events-auto" style="width: 25%; height: 40%; top: 30%; left: 20%;" title="点击播放/暂停音乐"></button>
 
     <button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2 rounded-full opacity-80 hover:opacity-100 transition-all duration-300">
         <span id="theme-icon" class="text-gray-500 text-2xl font-bold">☼</span>
-    </button>
-
-    <button id="music-toggle" class="fixed top-20 right-6 z-50 p-2 rounded-full opacity-80 hover:opacity-100 transition-all duration-300">
-        <span id="music-icon" class="text-gray-500 text-2xl font-bold inline-block">♪</span>
     </button>
 
     <div id="password-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
@@ -133,9 +129,8 @@
         
         // 音乐相关变量
         const bgm = document.getElementById('bgm');
-        const musicToggle = document.getElementById('music-toggle');
-        const musicIcon = document.getElementById('music-icon');
         const patrickTrigger = document.getElementById('patrick-trigger'); // 派大星点击区域
+        const patrickHint = document.getElementById('patrick-hint'); // 派大星点击提示
         let isMusicPlaying = false;
 
         const correctAnswers = ['2024115', '20241105', '2024.11.5', '2024.11.05', '2024年11月5日'];
@@ -159,32 +154,37 @@
                 themeIcon.innerText = '☽'; 
                 lightModeContent.classList.add('hidden');
                 darkModeContent.classList.remove('hidden');
-                patrickTrigger.classList.add('hidden'); // 切换到暗色模式（信件页）时隐藏派大星点击区域
+                patrickTrigger.classList.add('hidden'); // 切换到暗色模式隐藏派大星点击区域
+                if(patrickHint) patrickHint.classList.add('hidden'); // 切换到暗色模式隐藏提示
                 document.body.className = "min-h-screen bg-slate-900 transition-all duration-700 font-letter overflow-x-hidden flex flex-col justify-between relative";
                 loadLetterText();
             } else {
                 themeIcon.innerText = '☼';
                 darkModeContent.classList.add('hidden');
                 lightModeContent.classList.remove('hidden');
-                patrickTrigger.classList.remove('hidden'); // 回到主页时显示派大星点击区域
+                patrickTrigger.classList.remove('hidden'); // 回到主页显示派大星点击区域
+                // 如果音乐还没播放过，回到主页时可以重新显示提示
+                if(!isMusicPlaying && patrickHint) patrickHint.classList.remove('hidden'); 
                 document.body.className = "min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative";
             }
         }
 
         // 播放/暂停音乐函数
         function toggleMusic() {
+            // 用户点击后，隐藏文字提示
+            if (patrickHint) {
+                patrickHint.classList.add('hidden');
+            }
+
             if (isMusicPlaying) {
                 bgm.pause();
-                musicIcon.classList.remove('animate-spin-slow'); // 停止旋转
             } else {
                 bgm.play().catch(e => console.log("等待用户交互后播放"));
-                musicIcon.classList.add('animate-spin-slow'); // 开始旋转
             }
             isMusicPlaying = !isMusicPlaying;
         }
 
-        // 绑定点击事件：点击派大星区域 或 右上角音符图标 都可以控制音乐
-        musicToggle.addEventListener('click', toggleMusic);
+        // 绑定点击事件：点击派大星区域控制音乐
         patrickTrigger.addEventListener('click', toggleMusic);
 
         themeToggle.addEventListener('click', () => {
@@ -203,7 +203,6 @@
                 passwordModal.classList.add('hidden');
                 answerInput.value = '';
                 toggleTheme();
-                // 已经删除了这里的自动播放逻辑
             } else {
                 errorMessage.classList.remove('hidden');
                 answerInput.value = '';
