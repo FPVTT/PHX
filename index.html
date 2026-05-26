@@ -26,18 +26,15 @@
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            /* 1. 核心动画：让背景整体律动（派大星、海绵宝宝、蛋糕一起浮动） */
+            /* 1. 背景整体律动（派大星、海绵宝宝、蛋糕一起浮动） */
             .animate-character-dance {
                 animation: characterDance 6s ease-in-out infinite;
             }
-            /* 2. 眨眼动画：两个遮罩层闪烁模拟眨眼，随机间隔 */
-            .animate-blink-patrick {
-                animation: blinkPatrick 0.4s ease-out 1s 1;
+            /* 2. 核心修改：2秒周期性眨眼动画 */
+            .animate-blink-eye {
+                animation: blinkCycle 2s infinite;
             }
-            .animate-blink-spongebob {
-                animation: blinkSpongebob 0.4s ease-out 2.5s 1;
-            }
-            /* 漂浮装饰元素动效 */
+            /* 漂浮空气泡动效 */
             .animate-bubble-float {
                 animation: bubbleFloat 4s ease-in-out infinite;
             }
@@ -49,14 +46,10 @@
             66% { transform: translateY(6px) scale(0.98) rotate(-1.5deg); }
         }
 
-        /* 派大星和海绵宝宝眨眼的遮罩动画 */
-        @keyframes blinkPatrick {
-            0%, 100% { background-color: transparent; }
-            50% { background-color: rgba(255, 255, 255, 0.95); }
-        }
-        @keyframes blinkSpongebob {
-            0%, 100% { background-color: transparent; }
-            50% { background-color: rgba(255, 255, 255, 0.95); }
+        /* 2秒循环：前80%的时间闭眼（透明），最后快速闪烁完成眨眼 */
+        @keyframes blinkCycle {
+            0%, 80%, 100% { background-color: transparent; }
+            90% { background-color: rgba(255, 255, 255, 0.95); }
         }
 
         @keyframes bubbleFloat {
@@ -69,9 +62,9 @@
 
     <div id="bg-character-layer" class="absolute inset-0 z-0 pointer-events-none bg-contain bg-center bg-no-repeat opacity-95 transition-all duration-700 mix-blend-multiply dark:mix-blend-normal dark:opacity-10 animate-character-dance" style="background-image: url('background.png'); background-position: center 45%;">
         
-        <div class="absolute w-[2%] h-[2%] top-[39.5%] left-[34.8%] rounded-full opacity-90 animate-blink-patrick" style="background-color: transparent;"></div>
-        <div class="absolute w-[3.5%] h-[4.5%] top-[53.5%] left-[64%] rounded-full opacity-90 animate-blink-spongebob" style="background-color: transparent;"></div>
-        <div class="absolute w-[3.5%] h-[4.5%] top-[53.5%] left-[68.2%] rounded-full opacity-90 animate-blink-spongebob" style="background-color: transparent;"></div>
+        <div class="absolute w-[2%] h-[2%] top-[39.5%] left-[34.8%] rounded-full opacity-90 animate-blink-eye" style="background-color: transparent;"></div>
+        <div class="absolute w-[3.5%] h-[4.5%] top-[53.5%] left-[64%] rounded-full opacity-90 animate-blink-eye" style="background-color: transparent;"></div>
+        <div class="absolute w-[3.5%] h-[4.5%] top-[53.5%] left-[68.2%] rounded-full opacity-90 animate-blink-eye" style="background-color: transparent;"></div>
     </div>
 
     <div class="absolute inset-0 z-10 pointer-events-none overflow-hidden select-none">
@@ -81,8 +74,8 @@
         <span class="absolute bottom-[40%] right-[15%] text-3xl animate-bubble-float" style="animation-delay: 2.2s;">🧼</span>
     </div>
 
-    <button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2 rounded-full opacity-20 hover:opacity-100 transition-all duration-300">
-        <i id="theme-icon" class="fa fa-sun-o text-white text-xl"></i>
+    <button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2 rounded-full opacity-40 hover:opacity-100 transition-all duration-300">
+        <i id="theme-icon" class="fa fa-sun-o text-gray-400 text-xl"></i>
     </button>
 
     <div id="password-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
@@ -144,25 +137,6 @@
 
         const correctAnswers = ['生日快乐', '生日', '你的生日', '我的生日'];
 
-        // 【魔改】使用 JavaScript 来随机间隔触发眨眼，效果更自然
-        function randomBlink() {
-            const patrick = document.querySelector('.animate-blink-patrick');
-            const spongebob = document.querySelectorAll('.animate-blink-spongebob');
-            
-            // 为遮罩层添加/移除动画类
-            patrick.classList.remove('animate-blink-patrick');
-            spongebob.forEach(eye => eye.classList.remove('animate-blink-spongebob'));
-            
-            // 随机间隔 2-6 秒眨一次眼
-            setTimeout(() => {
-                patrick.classList.add('animate-blink-patrick');
-                spongebob.forEach(eye => eye.classList.add('animate-blink-spongebob'));
-                randomBlink(); 
-            }, 2000 + Math.random() * 4000); 
-        }
-        // 页面加载后开始随机眨眼
-        window.addEventListener('load', randomBlink);
-
         function loadLetterText() {
             const placeholder = document.getElementById('letter-content-placeholder');
             fetch('letter.txt')
@@ -179,15 +153,15 @@
         function toggleTheme() {
             document.documentElement.classList.toggle('dark');
             if (document.documentElement.classList.contains('dark')) {
-                // 恢复为之前不太明显的白色轮廓月亮图标
-                themeIcon.className = 'fa fa-moon-o text-white text-xl';
+                // 切换到深色，保持灰色半透明风格
+                themeIcon.className = 'fa fa-moon-o text-gray-400 text-xl';
                 lightModeContent.classList.add('hidden');
                 darkModeContent.classList.remove('hidden');
                 document.body.className = "min-h-screen bg-slate-900 transition-all duration-700 font-letter overflow-x-hidden flex flex-col justify-between relative";
                 loadLetterText();
             } else {
-                // 恢复为之前不太明显的白色轮廓太阳图标
-                themeIcon.className = 'fa fa-sun-o text-white text-xl';
+                // 切换到浅色，保持灰色半透明风格
+                themeIcon.className = 'fa fa-sun-o text-gray-400 text-xl';
                 darkModeContent.classList.add('hidden');
                 lightModeContent.classList.remove('hidden');
                 document.body.className = "min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative";
