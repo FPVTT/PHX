@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>生日快乐 🎂</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -25,13 +26,17 @@
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            /* 1. 核心动画：让背景整体律动（派大星、海绵宝宝、蛋糕一起浮动） */
+            /* 1. 核心动画：让背景整体律动 */
             .animate-character-dance {
                 animation: characterDance 6s ease-in-out infinite;
             }
             /* 漂浮装饰元素动效 */
             .animate-bubble-float {
                 animation: bubbleFloat 4s ease-in-out infinite;
+            }
+            /* 礼物盒跳动 */
+            .animate-gift-bounce {
+                animation: giftBounce 2s ease-in-out infinite;
             }
         }
 
@@ -45,9 +50,25 @@
             0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.6; }
             50% { transform: translateY(-20px) translateX(10px); opacity: 0.9; }
         }
+
+        @keyframes giftBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.05); }
+        }
     </style>
 </head>
 <body class="min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative">
+
+    <div id="intro-overlay" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center transition-opacity duration-1000">
+        <div id="gift-wrapper" class="flex flex-col items-center cursor-pointer transition-transform duration-300 hover:scale-110">
+            <div id="gift-box" class="text-8xl md:text-9xl animate-gift-bounce select-none">
+                🎁
+            </div>
+            <p id="gift-text" class="mt-8 text-patrick-pink font-bold text-lg md:text-xl font-cute tracking-widest animate-pulse">
+                有一份特别的礼物，点击拆开
+            </p>
+        </div>
+    </div>
 
     <audio id="bgm" loop preload="auto">
         <source src="music.mp3" type="audio/mpeg">
@@ -116,7 +137,6 @@
                 <div class="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 rounded-t-2xl"></div>
 
                 <div class="pt-2">
-                    <h2 class="text-2xl font-bold text-center mb-8 text-pink-300 font-cute tracking-wide">给你的一封信</h2>
                     <div id="letter-content-placeholder" class="whitespace-pre-wrap text-base md:text-lg leading-relaxed text-slate-300 min-h-[200px]">
                         稍等
                     </div>
@@ -127,17 +147,70 @@
     </div>
 
     <script>
+        // =======================
+        // 开场礼盒与礼花特效逻辑
+        // =======================
+        const introOverlay = document.getElementById('intro-overlay');
+        const giftWrapper = document.getElementById('gift-wrapper');
+        let continuousConfettiInterval;
+
+        giftWrapper.addEventListener('click', () => {
+            // 1. 隐藏礼物盒本身，防止重复点击
+            giftWrapper.style.display = 'none';
+
+            // 2. 触发一次盛大的爆点礼花
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.5 },
+                colors: ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA']
+            });
+
+            // 3. 等待 1.5 秒让礼花飞一会儿，然后开始淡出白底遮罩
+            setTimeout(() => {
+                introOverlay.classList.add('opacity-0');
+                
+                // 4. 等遮罩完全透明（1秒后），彻底隐藏遮罩并开始持续的小礼花
+                setTimeout(() => {
+                    introOverlay.classList.add('hidden');
+                    startContinuousConfetti();
+                }, 1000);
+
+            }, 1500);
+        });
+
+        // 持续 10% 密度飘落礼花的函数
+        function startContinuousConfetti() {
+            // 每 400 毫秒从顶部随机位置掉落 1~2 个彩色纸片
+            continuousConfettiInterval = setInterval(() => {
+                confetti({
+                    particleCount: 1, // 数量少，看起来自然
+                    startVelocity: 0, // 初始速度为0，像从天花板掉下来
+                    ticks: 300,       // 存活时间长一点
+                    gravity: 0.4,     // 重力小一点，飘得慢
+                    origin: {
+                        x: Math.random(), // 水平随机
+                        y: -0.1           // 从屏幕最上方稍靠外的位置产生
+                    },
+                    colors: ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA'],
+                    shapes: ['circle', 'square'],
+                    scalar: Math.random() * 0.5 + 0.5 // 随机大小
+                });
+            }, 400); 
+        }
+
+        // =======================
+        // 核心页面交互逻辑
+        // =======================
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
         
-        // 第一层：密码弹窗
         const passwordModal = document.getElementById('password-modal');
         const answerInput = document.getElementById('answer-input');
         const submitBtn = document.getElementById('submit-btn');
         const cancelBtn = document.getElementById('cancel-btn');
         const errorMessage = document.getElementById('error-message');
         
-        // 第二层：确认弹窗
         const confirmModal = document.getElementById('confirm-modal');
         const confirmYesBtn = document.getElementById('confirm-yes-btn');
         const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
@@ -145,7 +218,6 @@
         const lightModeContent = document.getElementById('light-mode-content');
         const darkModeContent = document.getElementById('dark-mode-content');
         
-        // 音乐及派大星点击相关变量
         const bgm = document.getElementById('bgm');
         const patrickTrigger = document.getElementById('patrick-trigger'); 
         const patrickHint = document.getElementById('patrick-hint'); 
@@ -172,24 +244,30 @@
                 themeIcon.innerText = '☽'; 
                 lightModeContent.classList.add('hidden');
                 darkModeContent.classList.remove('hidden');
-                patrickTrigger.classList.add('hidden'); // 切换到暗色模式隐藏派大星点击区域
-                if(patrickHint) patrickHint.classList.add('hidden'); // 切换到暗色模式隐藏提示
+                patrickTrigger.classList.add('hidden'); 
+                if(patrickHint) patrickHint.classList.add('hidden'); 
+                
+                // 进入信件页，为了不干扰阅读，可以暂停礼花（可选）
+                // clearInterval(continuousConfettiInterval); 
+
                 document.body.className = "min-h-screen bg-slate-900 transition-all duration-700 font-letter overflow-x-hidden flex flex-col justify-between relative";
                 loadLetterText();
             } else {
                 themeIcon.innerText = '☼';
                 darkModeContent.classList.add('hidden');
                 lightModeContent.classList.remove('hidden');
-                patrickTrigger.classList.remove('hidden'); // 回到主页显示派大星点击区域
-                // 如果音乐还没播放过，回到主页时可以重新显示提示
+                patrickTrigger.classList.remove('hidden'); 
                 if(!isMusicPlaying && patrickHint) patrickHint.classList.remove('hidden'); 
+                
+                // 如果之前停了礼花，退回主页可以重新开启（可选）
+                // startContinuousConfetti();
+
                 document.body.className = "min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative";
             }
         }
 
         // 播放/暂停音乐函数
         function toggleMusic() {
-            // 用户点击后，隐藏文字提示
             if (patrickHint) {
                 patrickHint.classList.add('hidden');
             }
@@ -202,10 +280,8 @@
             isMusicPlaying = !isMusicPlaying;
         }
 
-        // 绑定点击事件：点击派大星区域控制音乐
         patrickTrigger.addEventListener('click', toggleMusic);
 
-        // 点击太阳图标：调出密码输入框
         themeToggle.addEventListener('click', () => {
             if (!document.documentElement.classList.contains('dark')) {
                 passwordModal.classList.remove('hidden');
@@ -216,7 +292,6 @@
             }
         });
 
-        // 密码输入框确认按钮
         submitBtn.addEventListener('click', () => {
             const answer = answerInput.value.trim();
             if (correctAnswers.some(correct => answer.toLowerCase() === correct.toLowerCase())) {
@@ -229,29 +304,25 @@
             }
         });
 
-        // 密码输入框取消按钮
         cancelBtn.addEventListener('click', () => {
             passwordModal.classList.add('hidden');
             answerInput.value = '';
             errorMessage.classList.add('hidden');
         });
 
-        // 二次确认弹窗的按钮事件
         confirmYesBtn.addEventListener('click', () => {
             confirmModal.classList.add('hidden');
             answerInput.value = '';
-            toggleTheme(); // 这里才真正切换到信件页面
+            toggleTheme();
         });
 
         confirmCancelBtn.addEventListener('click', () => {
             confirmModal.classList.add('hidden');
-            answerInput.value = ''; // 清空输入框内容，退回主页
+            answerInput.value = ''; 
         });
 
-        // 回车键快捷提交（只在密码框有效）
         answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitBtn.click(); });
         
-        // 点击空白处关闭弹窗
         passwordModal.addEventListener('click', (e) => { if (e.target === passwordModal) cancelBtn.click(); });
         confirmModal.addEventListener('click', (e) => { if (e.target === confirmModal) confirmCancelBtn.click(); });
     </script>
