@@ -88,13 +88,13 @@
         <span class="absolute bottom-[40%] right-[15%] text-3xl animate-bubble-float" style="animation-delay: 2.2s;">✨</span>
     </div>
 
-    <div id="patrick-hint" class="absolute z-20 text-patrick-pink text-xs md:text-sm font-bold bg-white/80 px-3 py-1.5 rounded-full shadow-sm pointer-events-none animate-bounce" style="top: 26%; left: 22%;">
-        戳我听歌 🎵
+    <div id="patrick-hint" class="absolute z-20 text-patrick-pink text-xs md:text-sm font-bold bg-white/80 px-3 py-1.5 rounded-full shadow-sm pointer-events-none animate-bounce" style="top: 36%; left: 22%;">
+        戳一下
     </div>
 
     <button id="patrick-trigger" class="absolute z-20 cursor-pointer pointer-events-auto" style="width: 25%; height: 40%; top: 30%; left: 20%;" title="点击播放/暂停音乐"></button>
 
-    <button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2 rounded-full opacity-80 hover:opacity-100 transition-all duration-300">
+    <button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2 rounded-full opacity-50 hover:opacity-100 transition-all duration-300">
         <span id="theme-icon" class="text-gray-500 text-2xl font-bold">☼</span>
     </button>
 
@@ -117,17 +117,17 @@
 
     <div id="confirm-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-pink-100 dark:border-slate-700 text-center">
-            <p class="text-gray-700 dark:text-gray-200 font-bold text-lg mb-6 mt-2">暗号正确！</p>
+            <p class="text-gray-700 dark:text-gray-200 font-bold text-lg mb-6 mt-2">你真的要打开吗</p>
             <div class="flex gap-3">
-                <button id="confirm-yes-btn" class="flex-1 py-2 bg-patrick-pink hover:bg-pink-400 text-white rounded-xl transition-colors font-bold text-sm">马上拆开</button>
-                <button id="confirm-cancel-btn" class="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors text-sm">再等一下</button>
+                <button id="confirm-yes-btn" class="flex-1 py-2 bg-patrick-pink hover:bg-pink-400 text-white rounded-xl transition-colors font-bold text-sm">是</button>
+                <button id="confirm-cancel-btn" class="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors text-sm">否</button>
             </div>
         </div>
     </div>
 
     <div id="light-mode-content" class="w-full flex-1 flex flex-col justify-between items-center z-20 py-12 px-4 select-none pointer-events-none">
         <h1 class="text-4xl md:text-5xl font-black text-patrick-pink tracking-wider drop-shadow-sm mt-4">
-            海欣，21岁生日快乐呀 🎉
+            海欣，生日快乐呀 🎉
         </h1>
 
         <div class="w-full max-w-md bg-white/40 backdrop-blur-md rounded-2xl p-5 border border-white/60 shadow-sm text-center mb-6">
@@ -191,7 +191,7 @@
             // ★【密度修改在这里】★
             // setInterval 的第二个参数 (这里是 400) 控制发射频率（毫秒）。
             // 数值越小（例如 100），礼花发射越快，看起来越密。
-            // 数值越大（例如 1000），礼花发射越慢，看起来越稀疏。
+            // 数值越大（例如 500），礼花发射越慢，看起来越稀疏。
             continuousConfettiInterval = setInterval(() => {
                 confetti({
                     // particleCount: 控制每次发射的纸片数量。保持为 1 可以有零星飘落的感觉。
