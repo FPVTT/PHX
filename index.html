@@ -60,11 +60,11 @@
 <body class="min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative">
 
     <div id="intro-overlay" class="fixed inset-0 z-[100] bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center transition-opacity duration-1000 cursor-pointer p-4 select-none" style="background-image: url('gift-bg.png');">
-        
-        <div id="gift-wrapper" class="relative animate-gift-bounce transition-transform duration-300 hover:scale-105 max-w-sm md:max-w-md w-full flex justify-center">
-            
-            <img src="gift-box.png" alt="生日礼盒" class="w-full max-w-[280px] md:max-w-[360px] h-auto drop-shadow-[0_25px_35px_rgba(0,0,0,0.3)]">
-            
+
+        <div id="gift-wrapper" class="relative animate-gift-bounce transition-transform duration-300 hover:scale-105 max-w-xl md:max-w-2xl w-full flex justify-center">
+
+            <img src="gift-box.png" alt="生日礼盒" class="w-full max-w-[380px] md:max-w-[500px] h-auto drop-shadow-[0_35px_50px_rgba(0,0,0,0.4)]">
+
         </div>
     </div>
 
@@ -157,17 +157,18 @@
             giftWrapper.style.display = 'none';
             introOverlay.style.pointerEvents = 'none';
 
-            // 爆点大礼花
+            // 修改点：重构大礼花参数，使其从中心向四周360°全屏高速爆裂喷发，模拟“向前”的3D视觉冲击
             confetti({
-                particleCount: 200, 
-                spread: 90,
-                origin: { y: 0.5 },
+                particleCount: 260,          // 增加粒子数量让喷射更密集
+                spread: 360,                 // 360度环绕扩散
+                startVelocity: 55,           // 极大提升初速度，造成强烈的向前喷涌感
+                origin: { x: 0.5, y: 0.5 },    // 发射核心精准定位在屏幕正中央（礼盒原位置）
                 colors: ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA']
             });
 
             setTimeout(() => {
                 introOverlay.classList.add('opacity-0');
-                
+
                 setTimeout(() => {
                     introOverlay.classList.add('hidden');
                     startContinuousConfetti();
@@ -199,20 +200,20 @@
         // =======================
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
-        
+
         const passwordModal = document.getElementById('password-modal');
         const answerInput = document.getElementById('answer-input');
         const submitBtn = document.getElementById('submit-btn');
         const cancelBtn = document.getElementById('cancel-btn');
         const errorMessage = document.getElementById('error-message');
-        
+
         const confirmModal = document.getElementById('confirm-modal');
         const confirmYesBtn = document.getElementById('confirm-yes-btn');
         const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
 
         const lightModeContent = document.getElementById('light-mode-content');
         const darkModeContent = document.getElementById('dark-mode-content');
-        
+
         const bgm = document.getElementById('bgm');
         const patrickTrigger = document.getElementById('patrick-trigger'); 
         const patrickHint = document.getElementById('patrick-hint'); 
@@ -241,7 +242,7 @@
                 darkModeContent.classList.remove('hidden');
                 patrickTrigger.classList.add('hidden'); 
                 if(patrickHint) patrickHint.classList.add('hidden'); 
-                
+
                 document.body.className = "min-h-screen bg-slate-900 transition-all duration-700 font-letter overflow-x-hidden flex flex-col justify-between relative";
                 loadLetterText();
             } else {
@@ -250,7 +251,7 @@
                 lightModeContent.classList.remove('hidden');
                 patrickTrigger.classList.remove('hidden'); 
                 if(!isMusicPlaying && patrickHint) patrickHint.classList.remove('hidden'); 
-                
+
                 document.body.className = "min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative";
             }
         }
@@ -310,7 +311,7 @@
         });
 
         answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitBtn.click(); });
-        
+
         passwordModal.addEventListener('click', (e) => { if (e.target === passwordModal) cancelBtn.click(); });
         confirmModal.addEventListener('click', (e) => { if (e.target === confirmModal) confirmCancelBtn.click(); });
     </script>
