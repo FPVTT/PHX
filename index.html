@@ -12,7 +12,7 @@
             theme: {
                 extend: {
                     colors: {
-                        'patrick-pink': '#FF9AA2',
+                        'patrick-pink': '#FF9AA2', // 派大星粉
                         'letter-bg': '#0f172a',
                         'letter-paper': '#1e293b',
                     },
@@ -26,19 +26,31 @@
     </script>
     <style type="text/tailwindcss">
         @layer utilities {
-            .animate-character-dance { animation: characterDance 6s ease-in-out infinite; }
-            .animate-bubble-float { animation: bubbleFloat 4s ease-in-out infinite; }
-            .animate-gift-bounce { animation: giftBounce 2s ease-in-out infinite; }
+            /* 1. 核心动画：让背景整体律动 */
+            .animate-character-dance {
+                animation: characterDance 6s ease-in-out infinite;
+            }
+            /* 漂浮装饰元素动效 */
+            .animate-bubble-float {
+                animation: bubbleFloat 4s ease-in-out infinite;
+            }
+            /* 礼物盒跳动 */
+            .animate-gift-bounce {
+                animation: giftBounce 2s ease-in-out infinite;
+            }
         }
+
         @keyframes characterDance {
             0%, 100% { transform: translateY(0px) scale(1) rotate(0deg); }
             33% { transform: translateY(-12px) scale(1.02) rotate(1.5deg); }
             66% { transform: translateY(6px) scale(0.98) rotate(-1.5deg); }
         }
+
         @keyframes bubbleFloat {
             0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.6; }
             50% { transform: translateY(-20px) translateX(10px); opacity: 0.9; }
         }
+
         @keyframes giftBounce {
             0%, 100% { transform: translateY(0) scale(1); }
             50% { transform: translateY(-15px) scale(1.03); }
@@ -47,9 +59,18 @@
 </head>
 <body class="min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative">
 
-    <div id="intro-overlay" class="fixed inset-0 z-[100] flex flex-col items-center justify-center transition-opacity duration-1000 cursor-pointer" style="background-color: #E6DFEB;">
+    <div id="intro-overlay" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center transition-opacity duration-1000 cursor-pointer">
         <div id="gift-wrapper" class="relative animate-gift-bounce select-none transition-transform duration-300 hover:scale-105">
-            <img src="1000033330.png" alt="精美礼盒" class="w-72 h-72 md:w-96 md:h-96 object-contain rounded-3xl shadow-2xl"/>
+            
+            <div class="absolute -top-12 md:-top-16 left-1/2 -translate-x-1/2 text-7xl md:text-8xl z-10">🎀</div>
+
+            <div id="gift-box" class="relative w-64 h-64 md:w-80 md:h-80 rounded-3xl bg-patrick-pink border-4 border-white shadow-2xl overflow-hidden flex items-center justify-center">
+                <div class="absolute inset-y-0 w-10 md:w-12 bg-white/80"></div>
+                <div class="absolute inset-x-0 h-10 md:h-12 bg-white/80"></div>
+                
+                <div class="absolute top-0 inset-x-0 h-16 bg-black/5 rounded-t-3xl border-b-2 border-white/20"></div>
+            </div>
+            
             </div>
     </div>
 
@@ -57,7 +78,8 @@
         <source src="music.mp3" type="audio/mpeg">
     </audio>
 
-    <div id="bg-character-layer" class="absolute inset-0 z-0 pointer-events-none bg-contain bg-center bg-no-repeat opacity-95 transition-all duration-700 mix-blend-multiply dark:mix-blend-normal dark:opacity-10 animate-character-dance" style="background-image: url('background.png'); background-position: center 45%;"></div>
+    <div id="bg-character-layer" class="absolute inset-0 z-0 pointer-events-none bg-contain bg-center bg-no-repeat opacity-95 transition-all duration-700 mix-blend-multiply dark:mix-blend-normal dark:opacity-10 animate-character-dance" style="background-image: url('background.png'); background-position: center 45%;">
+    </div>
 
     <div class="absolute inset-0 z-10 pointer-events-none overflow-hidden select-none">
         <span class="absolute top-[20%] left-[15%] text-3xl animate-bubble-float">💧</span>
@@ -66,16 +88,25 @@
         <span class="absolute bottom-[40%] right-[15%] text-3xl animate-bubble-float" style="animation-delay: 2.2s;">✨</span>
     </div>
 
-    <button id="patrick-trigger" class="absolute z-20 cursor-pointer pointer-events-auto" style="width: 25%; height: 40%; top: 30%; left: 20%;"></button>
+    <div id="patrick-hint" class="absolute z-20 text-patrick-pink text-xs md:text-sm font-bold bg-white/80 px-3 py-1.5 rounded-full shadow-sm pointer-events-none animate-bounce" style="top: 26%; left: 22%;">
+        戳我听歌 🎵
+    </div>
 
-    <button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2 rounded-full opacity-30 hover:opacity-100 transition-all duration-300">
+    <button id="patrick-trigger" class="absolute z-20 cursor-pointer pointer-events-auto" style="width: 25%; height: 40%; top: 30%; left: 20%;" title="点击播放/暂停音乐"></button>
+
+    <button id="theme-toggle" class="fixed top-6 right-6 z-50 p-2 rounded-full opacity-80 hover:opacity-100 transition-all duration-300">
         <span id="theme-icon" class="text-gray-500 text-2xl font-bold">☼</span>
     </button>
 
     <div id="password-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-pink-100 dark:border-slate-700">
             <p class="text-gray-600 dark:text-gray-300 text-center text-sm mb-6 mt-2">还记得咱俩是什么时候认识的吗</p>
-            <input type="text" id="answer-input" class="w-full px-4 py-2.5 border-2 border-patrick-pink/50 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-patrick-pink bg-white/50 text-center" placeholder="在此输入答案...">
+            <input 
+                type="text" 
+                id="answer-input" 
+                class="w-full px-4 py-2.5 border-2 border-patrick-pink/50 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-patrick-pink bg-white/50 text-center"
+                placeholder="在此输入答案..."
+            >
             <div class="flex gap-3">
                 <button id="cancel-btn" class="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors text-sm">取消</button>
                 <button id="submit-btn" class="flex-1 py-2 bg-patrick-pink hover:bg-pink-400 text-white rounded-xl transition-colors font-bold text-sm">确认</button>
@@ -86,121 +117,219 @@
 
     <div id="confirm-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-md rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-pink-100 dark:border-slate-700 text-center">
-            <p class="text-gray-700 dark:text-gray-200 font-bold text-lg mb-6 mt-2">你真的要打开吗</p>
+            <p class="text-gray-700 dark:text-gray-200 font-bold text-lg mb-6 mt-2">暗号正确！</p>
             <div class="flex gap-3">
-                <button id="confirm-yes-btn" class="flex-1 py-2 bg-patrick-pink hover:bg-pink-400 text-white rounded-xl transition-colors font-bold text-sm">是</button>
-                <button id="confirm-cancel-btn" class="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors text-sm">否</button>
+                <button id="confirm-yes-btn" class="flex-1 py-2 bg-patrick-pink hover:bg-pink-400 text-white rounded-xl transition-colors font-bold text-sm">马上拆开</button>
+                <button id="confirm-cancel-btn" class="flex-1 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors text-sm">再等一下</button>
             </div>
         </div>
     </div>
 
     <div id="light-mode-content" class="w-full flex-1 flex flex-col justify-between items-center z-20 py-12 px-4 select-none pointer-events-none">
+        <h1 class="text-4xl md:text-5xl font-black text-patrick-pink tracking-wider drop-shadow-sm mt-4">
+            海欣，21岁生日快乐呀 🎉
+        </h1>
+
+        <div class="w-full max-w-md bg-white/40 backdrop-blur-md rounded-2xl p-5 border border-white/60 shadow-sm text-center mb-6">
+            <p class="text-lg font-bold text-slate-700 mb-1">海绵宝宝和派大星推着大蛋糕来找你啦！</p>
+        </div>
     </div>
 
     <div id="dark-mode-content" class="hidden w-full flex-1 z-20 bg-letter-bg text-gray-200 font-letter">
         <div class="container mx-auto px-4 py-16 max-w-2xl">
             <div class="bg-letter-paper rounded-2xl shadow-2xl p-8 md:p-12 border border-slate-700/50 relative">
                 <div class="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 rounded-t-2xl"></div>
-                <div class="pt-2"><div id="letter-content-placeholder" class="whitespace-pre-wrap text-base md:text-lg leading-relaxed text-slate-300 min-h-[200px]">稍等</div></div>
+
+                <div class="pt-2">
+                    <div id="letter-content-placeholder" class="whitespace-pre-wrap text-base md:text-lg leading-relaxed text-slate-300 min-h-[200px]">
+                        稍等
+                    </div>
+                </div>
             </div>
             <p class="text-center mt-8 text-slate-500 text-xs font-cute">点击右上角的月亮可以返回主页哦</p>
         </div>
     </div>
 
     <script>
+        // =======================
+        // 开场礼盒与礼花特效逻辑
+        // =======================
         const introOverlay = document.getElementById('intro-overlay');
         const giftWrapper = document.getElementById('gift-wrapper');
+        let continuousConfettiInterval;
 
-        // 修改后的礼花触发逻辑
+        // 点击整个白底区域或礼物盒都可以触发
         introOverlay.addEventListener('click', () => {
+            // 1. 隐藏礼物盒本身，防止重复点击
             giftWrapper.style.display = 'none';
+            // 锁定点击，防止淡出期间再次点击
             introOverlay.style.pointerEvents = 'none';
 
+            // 2. 触发一次盛大的爆点礼花
             confetti({
-                particleCount: 350,
-                spread: 360,
-                startVelocity: 55,
-                origin: { x: 0.5, y: 0.5 },
-                ticks: 350,
+                particleCount: 200, // 增加开场礼花数量
+                spread: 90,
+                origin: { y: 0.5 },
                 colors: ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA']
             });
 
+            // 3. 等待 1.5 秒让礼花飞一会儿，然后开始淡出白底遮罩
             setTimeout(() => {
                 introOverlay.classList.add('opacity-0');
+                
+                // 4. 等遮罩完全透明（1秒后），彻底隐藏遮罩并开始持续的小礼花
                 setTimeout(() => {
                     introOverlay.classList.add('hidden');
                     startContinuousConfetti();
                 }, 1000);
+
             }, 1500);
         });
 
+        // 持续飘落礼花的函数
         function startContinuousConfetti() {
-            setInterval(() => {
+            // ★【密度修改在这里】★
+            // setInterval 的第二个参数 (这里是 400) 控制发射频率（毫秒）。
+            // 数值越小（例如 100），礼花发射越快，看起来越密。
+            // 数值越大（例如 1000），礼花发射越慢，看起来越稀疏。
+            continuousConfettiInterval = setInterval(() => {
                 confetti({
-                    particleCount: 3, 
+                    // particleCount: 控制每次发射的纸片数量。保持为 1 可以有零星飘落的感觉。
+                    particleCount: 1, 
                     startVelocity: 0, 
                     ticks: 300,       
                     gravity: 0.4,     
-                    origin: { x: Math.random(), y: -0.1 },
+                    origin: {
+                        x: Math.random(), 
+                        y: -0.1           
+                    },
                     colors: ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA'],
                     shapes: ['circle', 'square'],
                     scalar: Math.random() * 0.5 + 0.5 
                 });
-            }, 100);
+            }, 400); // <-- 在这里修改时间间隔（毫秒）
         }
 
-        // 页面交互逻辑保持不变
+        // =======================
+        // 核心页面交互逻辑
+        // =======================
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
+        
         const passwordModal = document.getElementById('password-modal');
         const answerInput = document.getElementById('answer-input');
         const submitBtn = document.getElementById('submit-btn');
         const cancelBtn = document.getElementById('cancel-btn');
+        const errorMessage = document.getElementById('error-message');
+        
         const confirmModal = document.getElementById('confirm-modal');
         const confirmYesBtn = document.getElementById('confirm-yes-btn');
         const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+
         const lightModeContent = document.getElementById('light-mode-content');
         const darkModeContent = document.getElementById('dark-mode-content');
+        
         const bgm = document.getElementById('bgm');
-        const patrickTrigger = document.getElementById('patrick-trigger');
+        const patrickTrigger = document.getElementById('patrick-trigger'); 
+        const patrickHint = document.getElementById('patrick-hint'); 
         let isMusicPlaying = false;
+
         const correctAnswers = ['2024115', '20241105', '2024.11.5', '2024.11.05', '2024年11月5日'];
 
         function loadLetterText() {
-            fetch('letter.txt').then(r => r.text()).then(t => document.getElementById('letter-content-placeholder').innerText = t).catch(e => document.getElementById('letter-content-placeholder').innerText = "信件加载失败");
+            const placeholder = document.getElementById('letter-content-placeholder');
+            fetch('letter.txt')
+                .then(response => {
+                    if (!response.ok) throw new Error('未能在仓库中找到 letter.txt');
+                    return response.text();
+                })
+                .then(text => { placeholder.innerHTML = text; })
+                .catch(err => {
+                    placeholder.innerHTML = `<p class="text-red-400 text-center">❌ 信件加载失败<br><span class="text-xs text-gray-500">${err.message}</span></p>`;
+                });
         }
 
         function toggleTheme() {
             document.documentElement.classList.toggle('dark');
-            const isDark = document.documentElement.classList.contains('dark');
-            themeIcon.innerText = isDark ? '☽' : '☼';
-            lightModeContent.classList.toggle('hidden', isDark);
-            darkModeContent.classList.toggle('hidden', !isDark);
-            if(isDark) loadLetterText();
+            if (document.documentElement.classList.contains('dark')) {
+                themeIcon.innerText = '☽'; 
+                lightModeContent.classList.add('hidden');
+                darkModeContent.classList.remove('hidden');
+                patrickTrigger.classList.add('hidden'); 
+                if(patrickHint) patrickHint.classList.add('hidden'); 
+                
+                document.body.className = "min-h-screen bg-slate-900 transition-all duration-700 font-letter overflow-x-hidden flex flex-col justify-between relative";
+                loadLetterText();
+            } else {
+                themeIcon.innerText = '☼';
+                darkModeContent.classList.add('hidden');
+                lightModeContent.classList.remove('hidden');
+                patrickTrigger.classList.remove('hidden'); 
+                if(!isMusicPlaying && patrickHint) patrickHint.classList.remove('hidden'); 
+                
+                document.body.className = "min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative";
+            }
         }
 
-        patrickTrigger.addEventListener('click', () => {
-            isMusicPlaying ? bgm.pause() : bgm.play();
+        // 播放/暂停音乐函数
+        function toggleMusic() {
+            if (patrickHint) {
+                patrickHint.classList.add('hidden');
+            }
+
+            if (isMusicPlaying) {
+                bgm.pause();
+            } else {
+                bgm.play().catch(e => console.log("等待用户交互后播放"));
+            }
             isMusicPlaying = !isMusicPlaying;
-        });
+        }
+
+        patrickTrigger.addEventListener('click', toggleMusic);
 
         themeToggle.addEventListener('click', () => {
-            if (!document.documentElement.classList.contains('dark')) passwordModal.classList.remove('hidden');
-            else toggleTheme();
-        });
-
-        submitBtn.addEventListener('click', () => {
-            if (correctAnswers.includes(answerInput.value.trim())) {
-                passwordModal.classList.add('hidden');
-                confirmModal.classList.remove('hidden');
+            if (!document.documentElement.classList.contains('dark')) {
+                passwordModal.classList.remove('hidden');
+                answerInput.focus();
+                errorMessage.classList.add('hidden');
             } else {
-                document.getElementById('error-message').classList.remove('hidden');
+                toggleTheme();
             }
         });
 
-        cancelBtn.addEventListener('click', () => passwordModal.classList.add('hidden'));
-        confirmYesBtn.addEventListener('click', () => { confirmModal.classList.add('hidden'); toggleTheme(); });
-        confirmCancelBtn.addEventListener('click', () => confirmModal.classList.add('hidden'));
+        submitBtn.addEventListener('click', () => {
+            const answer = answerInput.value.trim();
+            if (correctAnswers.some(correct => answer.toLowerCase() === correct.toLowerCase())) {
+                passwordModal.classList.add('hidden');
+                confirmModal.classList.remove('hidden');
+            } else {
+                errorMessage.classList.remove('hidden');
+                answerInput.value = '';
+                answerInput.focus();
+            }
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            passwordModal.classList.add('hidden');
+            answerInput.value = '';
+            errorMessage.classList.add('hidden');
+        });
+
+        confirmYesBtn.addEventListener('click', () => {
+            confirmModal.classList.add('hidden');
+            answerInput.value = '';
+            toggleTheme();
+        });
+
+        confirmCancelBtn.addEventListener('click', () => {
+            confirmModal.classList.add('hidden');
+            answerInput.value = ''; 
+        });
+
+        answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitBtn.click(); });
+        
+        passwordModal.addEventListener('click', (e) => { if (e.target === passwordModal) cancelBtn.click(); });
+        confirmModal.addEventListener('click', (e) => { if (e.target === confirmModal) confirmCancelBtn.click(); });
     </script>
 </body>
 </html>
