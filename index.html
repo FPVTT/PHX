@@ -187,15 +187,15 @@
         });
 
         // 持续飘落礼花的函数
-        function startContinuousConfetti(100) {
+        function startContinuousConfetti() {
             // ★【密度修改在这里】★
             // setInterval 的第二个参数 (这里是 400) 控制发射频率（毫秒）。
             // 数值越小（例如 100），礼花发射越快，看起来越密。
             // 数值越大（例如 500），礼花发射越慢，看起来越稀疏。
-            continuousConfettiInterval = setInterval((500) => {
+            continuousConfettiInterval = setInterval(() => {
                 confetti({
                     // particleCount: 控制每次发射的纸片数量。保持为 1 可以有零星飘落的感觉。
-                    particleCount: 2, 
+                    particleCount: 3, 
                     startVelocity: 0, 
                     ticks: 300,       
                     gravity: 0.4,     
@@ -207,7 +207,7 @@
                     shapes: ['circle', 'square'],
                     scalar: Math.random() * 0.5 + 0.5 
                 });
-            }, 400); // <-- 在这里修改时间间隔（毫秒）
+            }, 100); // <-- 在这里修改时间间隔（毫秒）
         }
 
         // =======================
