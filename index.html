@@ -59,12 +59,12 @@
 </head>
 <body class="min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative">
 
-    <div id="intro-overlay" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center transition-opacity duration-1000 cursor-pointer">
-        <div id="gift-wrapper" class="relative animate-gift-bounce select-none transition-transform duration-300 hover:scale-105">
-
-            <img src="image_0.png" alt="可爱礼物盒" class="w-64 h-64 md:w-80 md:h-80 mx-auto object-cover rounded-3xl border-4 border-white shadow-2xl">
-
-            </div>
+    <div id="intro-overlay" class="fixed inset-0 z-[100] bg-[#E5DBF4] flex flex-col items-center justify-center transition-opacity duration-1000 cursor-pointer p-4">
+        <div id="gift-wrapper" class="relative animate-gift-bounce select-none transition-transform duration-300 hover:scale-105 max-w-md md:max-w-xl w-full flex justify-center">
+            
+            <img src="gift.png" alt="生日礼物盒" class="w-full max-w-[320px] md:max-w-[420px] h-auto rounded-3xl shadow-2xl border-4 border-white/60">
+            
+        </div>
     </div>
 
     <audio id="bgm" loop preload="auto">
@@ -151,26 +151,23 @@
         const giftWrapper = document.getElementById('gift-wrapper');
         let continuousConfettiInterval;
 
-        // 点击整个白底区域或礼物盒都可以触发
+        // 点击整个区域或照片都可以触发
         introOverlay.addEventListener('click', () => {
-            // 1. 隐藏礼物盒本身，防止重复点击
             giftWrapper.style.display = 'none';
-            // 锁定点击，防止淡出期间再次点击
             introOverlay.style.pointerEvents = 'none';
 
-            // 2. 触发一次盛大的爆点礼花
+            // 触发盛大的爆点礼花
             confetti({
-                particleCount: 200, // 增加开场礼花数量
+                particleCount: 200, 
                 spread: 90,
                 origin: { y: 0.5 },
                 colors: ['#FF9AA2', '#FFB7B2', '#FFDAC1', '#E2F0CB', '#B5EAD7', '#C7CEEA']
             });
 
-            // 3. 等待 1.5 秒让礼花飞一会儿，然后开始淡出白底遮罩
+            // 等待 1.5 秒让礼花飞一会儿，然后淡出遮罩
             setTimeout(() => {
                 introOverlay.classList.add('opacity-0');
-
-                // 4. 等遮罩完全透明（1秒后），彻底隐藏遮罩并开始持续的小礼花
+                
                 setTimeout(() => {
                     introOverlay.classList.add('hidden');
                     startContinuousConfetti();
@@ -181,13 +178,8 @@
 
         // 持续飘落礼花的函数
         function startContinuousConfetti() {
-            // ★【密度修改在这里】★
-            // setInterval 的第二个参数 (这里是 400) 控制发射频率（毫秒）。
-            // 数值越小（例如 100），礼花发射越快，看起来越密。
-            // 数值越大（例如 1000），礼花发射越慢，看起来越稀疏。
             continuousConfettiInterval = setInterval(() => {
                 confetti({
-                    // particleCount: 控制每次发射的纸片数量。保持为 1 可以有零星飘落的感觉。
                     particleCount: 1, 
                     startVelocity: 0, 
                     ticks: 300,       
@@ -200,7 +192,7 @@
                     shapes: ['circle', 'square'],
                     scalar: Math.random() * 0.5 + 0.5 
                 });
-            }, 400); // <-- 在这里修改时间间隔（毫秒）
+            }, 400); 
         }
 
         // =======================
@@ -208,20 +200,20 @@
         // =======================
         const themeToggle = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
-
+        
         const passwordModal = document.getElementById('password-modal');
         const answerInput = document.getElementById('answer-input');
         const submitBtn = document.getElementById('submit-btn');
         const cancelBtn = document.getElementById('cancel-btn');
         const errorMessage = document.getElementById('error-message');
-
+        
         const confirmModal = document.getElementById('confirm-modal');
         const confirmYesBtn = document.getElementById('confirm-yes-btn');
         const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
 
         const lightModeContent = document.getElementById('light-mode-content');
         const darkModeContent = document.getElementById('dark-mode-content');
-
+        
         const bgm = document.getElementById('bgm');
         const patrickTrigger = document.getElementById('patrick-trigger'); 
         const patrickHint = document.getElementById('patrick-hint'); 
@@ -250,7 +242,7 @@
                 darkModeContent.classList.remove('hidden');
                 patrickTrigger.classList.add('hidden'); 
                 if(patrickHint) patrickHint.classList.add('hidden'); 
-
+                
                 document.body.className = "min-h-screen bg-slate-900 transition-all duration-700 font-letter overflow-x-hidden flex flex-col justify-between relative";
                 loadLetterText();
             } else {
@@ -259,12 +251,11 @@
                 lightModeContent.classList.remove('hidden');
                 patrickTrigger.classList.remove('hidden'); 
                 if(!isMusicPlaying && patrickHint) patrickHint.classList.remove('hidden'); 
-
+                
                 document.body.className = "min-h-screen bg-white transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative";
             }
         }
 
-        // 播放/暂停音乐函数
         function toggleMusic() {
             if (patrickHint) {
                 patrickHint.classList.add('hidden');
@@ -320,7 +311,7 @@
         });
 
         answerInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitBtn.click(); });
-
+        
         passwordModal.addEventListener('click', (e) => { if (e.target === passwordModal) cancelBtn.click(); });
         confirmModal.addEventListener('click', (e) => { if (e.target === confirmModal) confirmCancelBtn.click(); });
     </script>
