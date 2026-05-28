@@ -62,7 +62,9 @@
         }
     </style>
 </head>
-<body class="min-h-screen gradient-bg transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative">
+<body class="min-h-screen bg-transparent transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative">
+
+    <div id="gradient-layer" class="fixed inset-0 z-[-1] gradient-bg transition-opacity duration-700 opacity-100"></div>
 
     <div id="intro-overlay" class="fixed inset-0 z-[100] bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center transition-opacity duration-1000 cursor-pointer p-4 select-none" style="background-image: url('gift-bg.png');">
         <div id="gift-wrapper" class="relative animate-gift-bounce transition-transform duration-300 hover:scale-105 max-w-xl md:max-w-2xl w-full flex justify-center">
@@ -157,6 +159,7 @@
         const bgm = document.getElementById('bgm');
         const patrickTrigger = document.getElementById('patrick-trigger'); 
         const patrickHint = document.getElementById('patrick-hint'); 
+        const gradientLayer = document.getElementById('gradient-layer'); // 获取流光图层
         let isMusicPlaying = false;
         const correctAnswers = ['2024115', '20241105', '2024.11.5', '2024.11.05', '2024年11月5日'];
 
@@ -177,20 +180,27 @@
             const isDark = document.documentElement.classList.contains('dark');
             
             if (isDark) {
+                // 进入信件模式：隐藏流光层，背景变深
                 themeIcon.innerText = '☽'; 
                 lightModeContent.classList.add('hidden');
                 darkModeContent.classList.remove('hidden');
                 patrickTrigger.classList.add('hidden'); 
                 if(patrickHint) patrickHint.classList.add('hidden'); 
+                
+                gradientLayer.classList.replace('opacity-100', 'opacity-0');
                 document.body.className = "min-h-screen bg-slate-900 transition-all duration-700 font-letter overflow-x-hidden flex flex-col justify-between relative";
+                
                 loadLetterText();
             } else {
+                // 返回主页模式：显示流光层，背景设为透明以显示流光
                 themeIcon.innerText = '☼';
                 darkModeContent.classList.add('hidden');
                 lightModeContent.classList.remove('hidden');
                 patrickTrigger.classList.remove('hidden'); 
                 if(!isMusicPlaying && patrickHint) patrickHint.classList.remove('hidden'); 
-                document.body.className = "min-h-screen gradient-bg transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative";
+                
+                gradientLayer.classList.replace('opacity-0', 'opacity-100');
+                document.body.className = "min-h-screen bg-transparent transition-all duration-700 font-cute overflow-x-hidden flex flex-col justify-between relative";
             }
         }
 
